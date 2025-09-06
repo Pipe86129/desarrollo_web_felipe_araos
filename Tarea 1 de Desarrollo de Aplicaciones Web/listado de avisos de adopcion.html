@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Avisos de Adopción</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Listado de Avisos de Adopción</h2>
+        <div>
+            <table style="width: 100%;">
+                <tr>
+                    <th>Fecha de publicación</th>
+                    <th>Fecha de entrega</th>
+                    <th>Comuna</th>
+                    <th>Sector</th>
+                    <th>Cantidad, Tipo y Edad</th>
+                    <th>Nombre de Contacto</th>
+                    <th>Total de fotos</th>
+                </tr>
+                <tr data-href="fila 1 del listado de avisos de adopcion.html">
+                    <td>04-01-2025 10:00</td>
+                    <td>10-01-2025</td>
+                    <td>Santiago</td>
+                    <td>Barrio Yungay</td>
+                    <td>1 Pastor alemán 5 años</td>
+                    <td>Felipe Araos</td>
+                    <td>2</td>
+                </tr>
+                <tr data-href="fila 2 del listado de avisos de adopcion.html">
+                    <td>09-12-2025 12:50</td>
+                    <td>15-12-2025</td>
+                    <td>La Pintana</td>
+                    <td>Estadio Municipal de La Pintana</td>
+                    <td>1 Pug 1 año</td>
+                    <td>David Quint</td>
+                    <td>2</td>
+                </tr>
+                <tr data-href="fila 3 del listado de avisos de adopcion.html">
+                    <td>09-12-2025 10:00</td>
+                    <td>10-12-2025</td>
+                    <td>Puente Alto</td>
+                    <td>Metro Plaza de Puente Alto</td>
+                    <td>1 Chihuaha 5 meses</td>
+                    <td>Lautaro del Campo</td>
+                    <td>2</td>
+                </tr>
+                <tr data-href="fila 4 del listado de avisos de adopcion.html">
+                    <td>10-06-2025 10:00</td>
+                    <td>22-06-22</td>
+                    <td>Vitacura</td>
+                    <td>Metro Manquehue</td>
+                    <td>1 Siamés 1 año</td>
+                    <td>Mathias Vacile</td>
+                    <td>2</td>
+                </tr>
+                <tr data-href="fila 5 del listado de avisos de adopcion.html">
+                    <td>17-11-2025 10:00</td>
+                    <td>18-11-2025</td>
+                    <td>La Cisterna</td>
+                    <td>Estadio Municipal de La Cisterna</td>
+                    <td>1 gato esfinge 3 meses</td>
+                    <td>Ariel Martínez</td>
+                    <td>2</td>
+                </tr>
+            </table>
+        </div>
+        <script>
+            //Es para hacer que las filas de la tabla sean clickeables y redirijan a su respectivo archivo HTML
+            document.addEventListener('DOMContentLoaded', function() {
+                //Es para seleccionar todas las filas de la tabla que tienen el atributo data-href
+                const filasTabla = document.querySelectorAll('table tr[data-href]');
+                
+                //Es para agregar un evento de clic a cada fila
+                filasTabla.forEach(fila => {
+                    fila.addEventListener('click', function() {
+                        // Redirigir al archivo específico de cada fila
+                        window.location.href = this.getAttribute('data-href');
+                    });
+                    
+                    //Es para cambiar el cursor a como puntero cuando se pasa sobre la fila
+                    fila.style.cursor = 'pointer';
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
