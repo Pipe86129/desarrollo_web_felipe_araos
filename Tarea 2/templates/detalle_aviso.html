@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del aviso de adopción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 10px;
+    }
+    .foto-miniatura {
+        width: 320px;
+        height: 240px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    #superposicion {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Información Completa del Aviso de Adopción</h2>
+        
+        {% if aviso %}
+        <table style="width: 100%;">
+            <!-- Esto es para la información de ubicación -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información para la ubicación</th>
+            </tr>
+            <tr>
+                <th>Región</th>
+                <td>{{ aviso.region }}</td>
+            </tr>
+            <tr>
+                <th>Comuna</th>
+                <td>{{ aviso.comuna }}</td>
+            </tr>
+            <tr>
+                <th>Sector</th>
+                <td>{{ aviso.sector if aviso.sector else 'No especificado' }}</td>
+            </tr>
+            
+            <!-- Esto es, para la información del contacto principal. -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información del contacto</th>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ aviso.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ aviso.email }}</td>
+            </tr>
+            <tr>
+                <th>Teléfono</th>
+                <td>{{ aviso.telefono if aviso.telefono else 'No proporcionado' }}</td>
+            </tr>
+            
+            <!-- Esto es para los contactos adicionales. -->
+            {% if aviso.contactos_adicionales %}
+            <tr>
+                <th>Contactos adicionales</th>
+                <td>
+                    {% for contacto in aviso.contactos_adicionales %}
+                    <div><strong>{{ contacto.tipo }}:</strong> {{ contacto.info }}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endif %}
+            
+            <!-- Esto es para la información de la mascota. -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información de la mascota</th>
+            </tr>
+            <tr>
+                <th>Tipo de mascota</th>
+                <td>{{ aviso.tipo_mascota }}</td>
+            </tr>
+            <tr>
+                <th>Cantidad</th>
+                <td>{{ aviso.cantidad }}</td>
+            </tr>
+            <tr>
+                <th>Edad</th>
+                <td>{{ aviso.edad }}</td>
+            </tr>
+            <tr>
+                <th>Fecha disponible para entrega</th>
+                <td>{{ aviso.fecha_disponible }}</td>
+            </tr>
+            
+            <!-- Esto es para la descripción. -->
+            {% if aviso.descripcion %}
+            <tr>
+                <th>Descripción</th>
+                <td>{{ aviso.descripcion }}</td>
+            </tr>
+            {% endif %}
+            
+            <!--Esto es para las fotos. -->
+            <tr>
+                <th>Fotos</th>
+                <td>
+                    {% if aviso.fotos %}
+                        {% for foto in aviso.fotos %}
+                            <img src="{{ foto.ruta }}" alt="Foto {{ loop.index }}" 
+                                 class="foto-miniatura" 
+                                 onclick="mostrarFoto('{{ foto.ruta }}')">
+                        {% endfor %}
+                    {% else %}
+                        No hay fotos
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Esto es para las fotos ampliadas, en src, se ponen todas esas letras para que no sea un source vacío y pase el validador HTML. -->
+        <div id="superposicion">
+            <div style="position:relative; text-align:center; margin-top:50px;">
+                <img id="fotoAmpliada" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Foto ampliada" width="800" height="600" style="border:5px solid white;">
+                <button onclick="cerrarFoto()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:10px; cursor:pointer;">X Cerrar</button>
+            </div>
+        </div>
+
+        {% else %}
+        <p>No se encontró información del aviso.</p>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('listado_completo_de_avisos') }}">← Volver al listado</a> | 
+            <a href="{{ url_for('portada') }}">Volver a la portada</a>
+        </div>
+    </div>
+
+    <script>
+    function mostrarFoto(src) {
+        document.getElementById('fotoAmpliada').src = src;
+        document.getElementById('superposicion').style.display = 'block';
+    }
+    
+    function cerrarFoto() {
+        document.getElementById('superposicion').style.display = 'none';
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portada de las adopciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style> 
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+    }
+    .boton-menu {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 5px;
+    }
+    .boton-menu:hover {
+        background-color: #0056b3;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Bienvenido!</h1>
+        <p><strong>Hola!</strong> Gracias por usar nuestra página. Te damos la bienvenida.</p>
+    </div>
+
+    <div>
+        <h2>Menú</h2>
+        <div class="botones">
+            <a href="{{ url_for('agregar_aviso_de_adopcion') }}" class="boton-menu">Agregar aviso de adopción</a>
+        </div>
+        <div class="botones">
+            <a href="{{ url_for('listado_completo_de_avisos') }}" class="boton-menu">Listado de avisos de adopción</a>
+        </div>
+        <div class="botones">
+            <a href="{{ url_for('mostrar_estadisticas') }}" class="boton-menu">Estadísticas</a>
+        </div>
+    </div>
+
+    <div>
+        <h3>Últimos 5 avisos de adopción</h3>
+        <table style="width: 100%;">
+            <tr>
+                <th>Fecha de publicación</th>
+                <th>Comuna</th>
+                <th>Sector</th>
+                <th>Cantidad, Tipo y Edad</th>
+                <th>Foto</th>
+            </tr>
+            {% for aviso in ultimos_avisos %}
+            <tr>
+                <td>{{ aviso.fecha_ingreso.strftime('%d-%m-%Y %H:%M') if aviso.fecha_ingreso else '' }}</td>
+                <td>{{ aviso.comuna.nombre if aviso.comuna else '' }}</td>
+                <td>{{ aviso.sector if aviso.sector else '' }}</td>
+                <td>{{ aviso.cantidad }} {{ aviso.tipo }}{% if aviso.cantidad > 1 %}s{% endif %} {{ aviso.edad }} {{ aviso.unidad_texto }}</td>
+                <td>
+                    {% if aviso.nombre_archivo_foto and aviso.nombre_archivo_foto != 'imagen_por_defecto_sin_foto.jpg' %}
+                        <img src="{{ url_for('static', filename='uploads/' + aviso.nombre_archivo_foto) }}" alt="Foto de {{ aviso.tipo }}" width="100">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/imagen_por_defecto_sin_foto.jpg') }}" alt="Sin foto" width="100">
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

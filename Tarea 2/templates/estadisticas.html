@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .contenedor {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #444;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        .grafico {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .grafico img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .volver {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .volver a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .volver a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Estadísticas de Adopciones</h1>
+        
+        <div class="grafico">
+            <h2>Gráfico de Líneas - Cantidad de avisos de adopción por día</h2>
+            <img src="{{ url_for('static', filename='img/grafico_de_linea.png') }}" 
+                 alt="Gráfico de líneas de cantidad de avisos de adopción por día" 
+                 width="600" height="400">
+        </div>
+
+        <div class="grafico">
+            <h2>Gráfico de Torta - Total de avisos por tipo de mascota</h2>
+            <img src="{{ url_for('static', filename='img/grafico_de_torta.png') }}" 
+                 alt="Gráfico de torta de cantidad de avisos de adopción" 
+                 width="600" height="400">
+        </div>
+
+        <div class="grafico">
+            <h2>Gráfico de Barras - Cantidad de avisos por mes</h2>
+            <img src="{{ url_for('static', filename='img/grafico_de_barras.png') }}" 
+                 alt="Gráfico de barras de cantidad de avisos de adopción" 
+                 width="600" height="400">
+        </div>
+
+        <div class="volver">
+            <a href="{{ url_for('portada') }}">Volver a la portada</a>
+        </div>
+    </div>
+</body>
+</html>
