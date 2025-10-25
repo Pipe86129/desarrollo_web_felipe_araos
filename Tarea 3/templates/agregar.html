@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar aviso de adopción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="contenedor-principal">
+        <div id="caja-validacion" hidden>
+            <h2 id="mensaje-validacion">Mensaje de validación</h2>
+            <ul id="lista-validacion"></ul>
+    </div>
+
+        <p><strong>¿Dónde?</strong></p>
+        <form name="formulario" method="POST" action="{{ url_for('agregar_aviso_de_adopcion') }}" enctype="multipart/form-data">
+            <label for="seleccionar-region">Región</label>
+            <select name="region" id="seleccionar-region" required>
+                <option value="">Seleccione una región</option>
+            </select><br>
+            
+            <label for="seleccionar-comuna">Comuna</label>
+            <select name="comuna" id="seleccionar-comuna" required>
+                <option value="">Seleccione una comuna</option>
+            </select><br>
+
+            <label for="sector">Sector</label>
+            <input type="text" name="sector" id="sector" maxlength="100"><br>
+            
+            <p><strong>¿Contacto de esta publicación?</strong></p>
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" minlength="3" maxlength="200" required><br>
+
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" maxlength="100" required><br>
+
+            <label for="telefono">Número de celular</label>
+            <input type="tel" name="telefono" id="telefono" maxlength="15"><br>
+
+            <label style="display: block; margin-bottom: 10px; font-weight: bold;">
+                Contactar por (puede seleccionar varios):
+            </label>
+            <div id="contenedor-contactos">
+                <!-- Los checkboxes se generarán dinámicamente aquí, para seleccionar los métodos de contacto. -->
+            </div>
+            <div id="contenedor-info-contacto"></div>
+
+            <p><strong>¿Qué mascota ofrece en adopción?</strong></p>
+            <label for="seleccionar-tipo">Tipo</label>
+            <select name="tipo" id="seleccionar-tipo" required>
+                <option value="">Seleccione un tipo de animal</option>
+            </select><br>
+
+            <label for="cantidad">Cantidad</label>
+            <input type="number" name="cantidad" id="cantidad" min="1" required><br>
+
+            <label for="edad">Edad</label>
+            <input type="number" name="edad" id="edad" min="1" required><br>
+
+            <label for="seleccionar-unidad">Unidad medida edad</label>
+            <select name="unidad_medida" id="seleccionar-unidad" required>
+                <option value="">Seleccione una opción</option>
+            </select><br>
+            
+            <label for="fecha">Fecha disponible para entrega</label>
+            <input type="datetime-local" name="fecha_entrega" id="fecha" required><br>
+            
+            <label for="comentarios">Descripción</label>
+            <textarea name="descripcion" id="comentarios" rows="10" cols="50"></textarea><br>
+
+            <label for="fotos">Fotos (puede seleccionar hasta 5 archivos)</label>
+            <input type="file" name="fotos" id="fotos" multiple accept="image/*,.pdf" required>
+            <small>Debe apretar ambas fotos a la vez, para que se puedan subir los archivos.</small><br>
+
+           <button id="boton-enviar" type="button">Agregar este aviso de adopción</button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/validacion.js') }}"></script>
+</body>
+</html>

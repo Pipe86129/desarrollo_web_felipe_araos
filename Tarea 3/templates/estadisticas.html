@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Se usa Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .contenedor {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #444;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        .grafico {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .grafico-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .volver {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .volver a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .volver a:hover {
+            background-color: #0056b3;
+        }
+        .mensaje-carga {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Estadísticas de adopciones</h1>
+        
+        <div class="grafico">
+            <h2>Gráfico de líneas - Cantidad de avisos de adopción por día</h2>
+            <div id="graficoLineas" class="grafico-container"></div>
+            <div id="mensajeCargaLineas" class="mensaje-carga">
+                Cargando datos de avisos por día...
+            </div>
+        </div>
+
+        <div class="grafico">
+            <h2>Gráfico de torta - Total de avisos por tipo de mascota</h2>
+            <div id="graficoTorta" class="grafico-container"></div>
+            <div id="mensajeCargaTorta" class="mensaje-carga">
+                Cargando datos por tipo de mascota...
+            </div>
+        </div>
+
+        <div class="grafico">
+            <h2>Gráfico de barras - Cantidad de avisos por mes</h2>
+            <div id="graficoBarras" class="grafico-container"></div>
+            <div id="mensajeCargaBarras" class="mensaje-carga">
+                Cargando datos por mes...
+            </div>
+        </div>
+
+        <div class="volver">
+            <a href="{{ url_for('portada') }}">Volver a la portada</a>
+        </div>
+    </div>
+
+    <script>
+        // Función para cargar todos los datos de estadísticas 
+        function cargarDatosEstadisticas() {
+            fetch('/estadisticas/datos')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'ok') {
+                        mostrarGraficoLineas(data.data);
+                        mostrarGraficoTorta(data.data);
+                        mostrarGraficoBarras(data.data);
+                    } else {
+                        throw new Error(data.message || 'Error en los datos');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('mensajeCargaLineas').innerHTML = 
+                        'Error al cargar los datos: ' + error.message;
+                    document.getElementById('mensajeCargaTorta').innerHTML = 
+                        'Error al cargar los datos: ' + error.message;
+                    document.getElementById('mensajeCargaBarras').innerHTML = 
+                        'Error al cargar los datos: ' + error.message;
+                });
+        }
+
+        // Gráfico de líneas con Highcharts
+        function mostrarGraficoLineas(datos) {
+            Highcharts.chart('graficoLineas', {
+                title: {
+                    text: 'Evolución de avisos de adopción'
+                },
+                xAxis: {
+                    categories: datos.fechas,
+                    title: {
+                        text: 'Fecha'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Cantidad de avisos'
+                    },
+                    min: 0
+                },
+                series: [{
+                    name: 'Avisos de adopción',
+                    data: datos.cantidades,
+                    color: '#007bff',
+                    type: 'line'
+                }],
+                credits: {
+                    enabled: false
+                }
+            });
+            document.getElementById('mensajeCargaLineas').style.display = 'none';
+        }
+
+        // Gráfico de torta con Highcharts
+        function mostrarGraficoTorta(datos) {
+            // Se preparan datos para el gráfico de torta
+            const seriesData = datos.tipos_mascota.map((tipo, index) => ({
+                name: tipo,
+                y: datos.cantidades_tipos[index],
+                color: datos.colores_tipos ? datos.colores_tipos[index] : undefined
+            }));
+
+            Highcharts.chart('graficoTorta', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Distribución por tipo de mascota'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.y} ({point.percentage:.1f}%)'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Avisos',
+                    data: seriesData
+                }],
+                credits: {
+                    enabled: false
+                }
+            });
+            document.getElementById('mensajeCargaTorta').style.display = 'none';
+        }
+
+        // Gráfico de barras con Highcharts
+        function mostrarGraficoBarras(datos) {
+            Highcharts.chart('graficoBarras', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Avisos por mes y tipo de mascota'
+                },
+                xAxis: {
+                    categories: datos.meses_labels,
+                    title: {
+                        text: 'Mes'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Cantidad de avisos'
+                    },
+                    min: 0
+                },
+                plotOptions: {
+                    column: {
+                        grouping: true,
+                        shadow: false
+                    }
+                },
+                series: [{
+                    name: 'Perros',
+                    data: datos.datos_perros,
+                    color: '#36A2EB'
+                }, {
+                    name: 'Gatos',
+                    data: datos.datos_gatos,
+                    color: '#FF6384'
+                }],
+                credits: {
+                    enabled: false
+                }
+            });
+            document.getElementById('mensajeCargaBarras').style.display = 'none';
+        }
+
+        // Cargar los gráficos cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', cargarDatosEstadisticas);
+    </script>
+</body>
+</html>

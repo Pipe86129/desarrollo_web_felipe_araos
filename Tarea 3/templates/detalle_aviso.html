@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del aviso de adopción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 10px;
+    }
+    .foto-miniatura {
+        width: 320px;
+        height: 240px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    #superposicion {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+    }
+    .seccion-comentarios {
+        margin-top: 40px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .formulario-comentario {
+        margin-bottom: 30px;
+        padding: 15px;
+        background: white;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .formulario-comentario label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    .formulario-comentario input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .formulario-comentario textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        resize: vertical;
+    }
+    .boton-comentario {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .boton-comentario:hover {
+        background-color: #0056b3;
+    }
+    .lista-comentarios {
+        margin-top: 20px;
+    }
+    .comentario {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #007bff;
+    }
+    .comentario-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .comentario-nombre {
+        font-weight: bold;
+        color: #333;
+    }
+    .comentario-fecha {
+        color: #666;
+        font-size: 0.9em;
+    }
+    .comentario-texto {
+        color: #444;
+        line-height: 1.4;
+    }
+    .mensaje-error {
+        color: red;
+        margin-top: 10px;
+        padding: 10px;
+        background: #ffe6e6;
+        border-radius: 3px;
+    }
+    .mensaje-exito {
+        color: green;
+        margin-top: 10px;
+        padding: 10px;
+        background: #e6ffe6;
+        border-radius: 3px;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Información Completa del Aviso de Adopción</h2>
+        
+        {% if aviso %}
+        <table style="width: 100%;">
+            <!-- Información de ubicación -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información para la ubicación</th>
+            </tr>
+            <tr>
+                <th>Región</th>
+                <td>{{ aviso.region }}</td>
+            </tr>
+            <tr>
+                <th>Comuna</th>
+                <td>{{ aviso.comuna }}</td>
+            </tr>
+            <tr>
+                <th>Sector</th>
+                <td>{{ aviso.sector if aviso.sector else 'No especificado' }}</td>
+            </tr>
+            
+            <!-- Información del contacto -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información del contacto</th>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ aviso.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ aviso.email }}</td>
+            </tr>
+            <tr>
+                <th>Teléfono</th>
+                <td>{{ aviso.telefono if aviso.telefono else 'No proporcionado' }}</td>
+            </tr>
+            
+            <!-- Contactos adicionales -->
+            {% if aviso.contactos_adicionales %}
+            <tr>
+                <th>Contactos adicionales</th>
+                <td>
+                    {% for contacto in aviso.contactos_adicionales %}
+                    <div><strong>{{ contacto.tipo }}:</strong> {{ contacto.info }}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endif %}
+            
+            <!-- Información de la mascota -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información de la mascota</th>
+            </tr>
+            <tr>
+                <th>Tipo de mascota</th>
+                <td>{{ aviso.tipo_mascota }}</td>
+            </tr>
+            <tr>
+                <th>Cantidad</th>
+                <td>{{ aviso.cantidad }}</td>
+            </tr>
+            <tr>
+                <th>Edad</th>
+                <td>{{ aviso.edad }}</td>
+            </tr>
+            <tr>
+                <th>Fecha disponible para entrega</th>
+                <td>{{ aviso.fecha_disponible }}</td>
+            </tr>
+            
+            <!-- Descripción -->
+            {% if aviso.descripcion %}
+            <tr>
+                <th>Descripción</th>
+                <td>{{ aviso.descripcion }}</td>
+            </tr>
+            {% endif %}
+            
+            <!-- Fotos -->
+            <tr>
+                <th>Fotos</th>
+                <td>
+                    {% if aviso.fotos %}
+                        {% for foto in aviso.fotos %}
+                            <img src="{{ foto.ruta }}" alt="Foto {{ loop.index }}" 
+                                 class="foto-miniatura" 
+                                 onclick="mostrarFoto('{{ foto.ruta }}')">
+                        {% endfor %}
+                    {% else %}
+                        No hay fotos
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Sección de comentarios -->
+        <div class="seccion-comentarios">
+            <h3>Comentarios</h3>
+            
+            <!-- Formulario para agregar comentario -->
+            <div class="formulario-comentario">
+                <h4>Agregar Comentario</h4>
+                <form id="formularioComentario">
+                    <label for="nombreComentario">Nombre:</label>
+                    <input type="text" id="nombreComentario" name="nombre" 
+                           minlength="3" maxlength="80" required>
+                    
+                    <label for="textoComentario">Comentario:</label>
+                    <textarea id="textoComentario" name="texto" 
+                              rows="4" cols="50" 
+                              minlength="5" required></textarea>
+                    
+                    <button type="submit" class="boton-comentario">Agregar comentario</button>
+                </form>
+                <div id="mensajeComentario"></div>
+            </div>
+
+            <!-- Lista de comentarios -->
+            <div class="lista-comentarios" id="listaComentarios">
+                <div class="mensaje-carga">Cargando comentarios...</div>
+            </div>
+        </div>
+
+        <!-- Fotos ampliadas -->
+        <div id="superposicion">
+            <div style="position:relative; text-align:center; margin-top:50px;">
+                <img id="fotoAmpliada" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Foto ampliada" width="800" height="600" style="border:5px solid white;">
+                <button onclick="cerrarFoto()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:10px; cursor:pointer;">X Cerrar</button>
+            </div>
+        </div>
+
+        {% else %}
+        <p>No se encontró información del aviso.</p>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('listado_completo_de_avisos') }}">← Volver al listado</a> | 
+            <a href="{{ url_for('portada') }}">Volver a la portada</a>
+        </div>
+    </div>
+
+    <!-- Script para las fotos ampliadas -->
+    <script>
+    function mostrarFoto(src) {
+        document.getElementById('fotoAmpliada').src = src;
+        document.getElementById('superposicion').style.display = 'block';
+    }
+    
+    function cerrarFoto() {
+        document.getElementById('superposicion').style.display = 'none';
+    }
+    </script>
+
+    <!-- Incluir el script de validaciones que ahora incluye comentarios -->
+    <script src="{{ url_for('static', filename='js/validacion.js') }}"></script>
+</body>
+</html>

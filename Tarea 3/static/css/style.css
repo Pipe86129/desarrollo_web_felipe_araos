@@ -1,0 +1,24 @@
+body {
+    background-color: white;
+    color: black;
+}
+
+/* Estilo para todas las imágenes de la tabla */
+table img {
+    width: 100px;       /* Ancho fijo */
+    height: 100px;      /* Alto fijo */
+    object-fit: cover;  /* Recortar imagen para mantener proporciones */
+    display: block;     /* Eliminar espacio extra debajo de la imagen */
+    margin: 0 auto;     /* Centrar horizontalmente */
+}
+
+/* Estilo para los gráficos de estadísticas */
+img[src*="gráfico de línea de cantidad de avisos de adopción x dia"],
+img[src*="gráfico de torta de cantidad de avisos de adopción"],
+img[src*="gráfico de barras de cantidad de avisos de adopción"] {
+    width: 600px;       /* Mismo ancho para todos */
+    height: 400px;      /* Mismo alto para todos */
+    display: block;     /* Hacer que sean elementos de bloque */
+    margin: 20px auto;  /* Centrar y separar entre sí */
+    border: 2px solid #ccc; /* Borde simple */
+}

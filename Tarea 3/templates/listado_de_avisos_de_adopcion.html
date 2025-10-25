@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de los avisos de adopción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+    }
+    tr:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    .paginacion {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .paginacion a {
+        margin: 0 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        border: 1px solid #ccc;
+    }
+    .paginacion a.activa {
+        background-color: #007bff;
+        color: white;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Listado de Avisos de Adopción</h2>
+        
+        {% if avisos %}
+        <div>
+            <table style="width: 100%;">
+                <tr>
+                    <th>Fecha de publicación</th>
+                    <th>Fecha de entrega</th>
+                    <th>Comuna</th>
+                    <th>Sector</th>
+                    <th>Cantidad, Tipo y Edad</th>
+                    <th>Nombre de Contacto</th>
+                    <th>Total de fotos</th>
+                </tr>
+                {% for aviso in avisos %}
+                <tr onclick="window.location.href='/aviso/{{ aviso.id }}'">
+                    <td>{{ aviso.fecha_publicacion }}</td>
+                    <td>{{ aviso.fecha_entrega }}</td>
+                    <td>{{ aviso.comuna }}</td>
+                    <td>{{ aviso.sector }}</td>
+                    <td>{{ aviso.mascota_info }}</td>
+                    <td>{{ aviso.nombre_contacto }}</td>
+                    <td>{{ aviso.total_fotos }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        
+        {% if total_paginas > 1 %}
+        <div class="paginacion">
+            {% if pagina_actual > 1 %}
+                <a href="{{ url_for('listado_completo_de_avisos', pagina=pagina_actual-1) }}">← Anterior</a>
+            {% endif %}
+            
+            <span>Página {{ pagina_actual }} de {{ total_paginas }}</span>
+            
+            {% if pagina_actual < total_paginas %}
+                <a href="{{ url_for('listado_completo_de_avisos', pagina=pagina_actual+1) }}">Siguiente →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <p>No hay avisos de adopción disponibles.</p>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('portada') }}">← Volver a la portada</a>
+        </div>
+    </div>
+</body>
+</html>
