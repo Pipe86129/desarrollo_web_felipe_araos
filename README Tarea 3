@@ -1,4 +1,4 @@
-Hola, para este README, lo que quiero dejar en claro, es que, usé la librería de Highcharts, la cual se tiene derecho a uso, y que el ayudante no tiene que descargarlo.
+Hola, para este README, lo que quiero dejar en claro, es que, usé la librería de Highcharts, la cual se tiene derecho a uso, y que el ayudante no tiene que descargarlo, sólo debe tener conexión a interntet.
 También, usé como motivación el auxiliar 7, priorizando el uso de Fetch.
 Traté de explicar en el código (en especial el archivo app.py) lo que busqué hacer en cada línea.
 En la parte de añadir foto de la parte de agregar aviso de adopción, si se desea añadir más de una foto, deben hacer clic en esas múltiples fotos a la vez (es decir, mantener presionado el cursor para seleccionar más de una
