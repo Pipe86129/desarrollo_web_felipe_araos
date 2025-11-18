@@ -1,0 +1,8 @@
+Para esta tarea, dado que, hay más de 100 archivos, tuve que subirlo en las dos carpetas que se aprecian (Tarea 4 parte 1 y Tarea 4 parte 2), espero que no sea problema.
+Para la realización de esta tarea, principalmente, me basé en el auxiliar 10, ya que, estaba bien organizado, y esa organización me sirvió de mucho a la hora de hacer mi tarea.
+Principalmente, mantuve las funcionalidades de las tareas anteriores, y ahora, le añadí la funcionalidad de evaluar. Lo que hice está detallado en el código, pero como señalé, principalmente fue eso,
+mantener las funcionalidades de las tareas anteriores, por decirlo así, "traspasé" las funcionalidades creando diversos archivos Java, y usé SpringBoot y JPA para la comunicación con la base de datos 
+(Mayoritariamente en el archivo ComunaRepository.java usé Spring Data JPA generando automáticamente la consulta SQL), y en los archivos NotaRepository, usé el calcular promedio de notas de un aviso usando 
+función AVG de SQL, también, usé el método de consulta derivada de Spring Data JPA en el archivo AvisoAdopcionRepository.java.
+
+Por último, dado que, en el auxiliar 10, se organizó en inglés (con nombres como AppController.java, ApiController.java, entre otros), usé este mismo formato en mi tarea, por la simpleza que tenía.
