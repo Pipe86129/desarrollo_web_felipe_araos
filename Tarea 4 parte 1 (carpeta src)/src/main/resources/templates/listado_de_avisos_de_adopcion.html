@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de los avisos de adopción</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+        text-align: center;
+    }
+    tr:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    .paginacion {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .paginacion a {
+        margin: 0 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .paginacion a.activa {
+        background-color: #007bff;
+        color: white;
+    }
+    .paginacion a:hover:not(.activa) {
+        background-color: #f0f0f0;
+    }
+    .btn-evaluar {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    .btn-evaluar:hover {
+        background-color: #218838;
+    }
+    .sin-nota {
+        color: #6c757d;
+        font-style: italic;
+    }
+    .info-paginacion {
+        text-align: center;
+        margin: 10px 0;
+        color: #666;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Listado de los avisos de adopción</h2>
+        
+        <!-- Información de paginación -->
+        <div class="info-paginacion">
+            Mostrando <span th:text="${avisos.size()}">0</span> de <span th:text="${total_avisos}">0</span> avisos totales
+        </div>
+        
+        <!-- Mensaje para mostrar resultados de evaluación -->
+        <div id="mensajeEvaluacion" style="display: none; margin: 10px 0; padding: 10px; border-radius: 5px;"></div>
+        
+        <div th:if="${avisos != null and !avisos.empty}">
+            <table style="width: 100%;">
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha publicación</th>
+                    <th>Sector</th>
+                    <th>Cantidad Tipo Edad</th>
+                    <th>Comuna</th>
+                    <th>nota</th>
+                    <th>evaluar</th>
+                </tr>
+                <tr th:each="aviso : ${avisos}" 
+                    th:onclick="'window.location.href=\'/aviso/' + ${aviso.id} + '\''"
+                    style="cursor: pointer;">
+                    <!-- ID -->
+                    <td th:text="${aviso.id}">1</td>
+                    
+                    <!-- Fecha publicación -->
+                    <td th:text="${#temporals.format(aviso.fecha_publicacion, 'dd-MM-yyyy HH:mm')}">02-06-2025 10:00</td>
+                    
+                    <!-- Sector -->
+                    <td th:text="${aviso.sector} ?: 'No especificado'">Beauchef 859, terraza</td>
+                    
+                    <!-- Cantidad Tipo Edad -->
+                    <td th:text="|${aviso.cantidad} ${aviso.tipo} ${aviso.edad} ${aviso.unidad_texto}|">
+                        1 gato 2 meses
+                    </td>
+                    
+                    <!-- Comuna -->
+                    <td th:text="${aviso.comuna}">Santiago</td>
+                    
+                    <!-- Nota promedio -->
+                    <td>
+                        <span th:if="${aviso.notaPromedio != null}" 
+                              th:text="${aviso.notaPromedio}">6</span>
+                        <span th:if="${aviso.notaPromedio == null}" 
+                              class="sin-nota">-</span>
+                    </td>
+                    
+                    <!-- Botón evaluar -->
+                    <td>
+                        <button class="btn-evaluar" 
+                                th:onclick="|event.stopPropagation(); mostrarModalEvaluacion(${aviso.id})|">
+                            evaluar
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Modal (hace alusión a la ventana emergente que aparece cuando se hace clic en evaluar) para evaluar -->
+        <div id="modalEvaluacion" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 5px; min-width: 300px;">
+                <h3>Evaluar aviso</h3>
+                <p>Seleccione una nota para este aviso:</p>
+                <div style="margin: 15px 0;">
+                    <select id="selectNota" style="padding: 8px; width: 100%;">
+                        <option value="">Seleccione una nota</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button onclick="cerrarModalEvaluacion()" style="margin-right: 10px; padding: 8px 15px;">Cancelar</button>
+                    <button onclick="enviarEvaluacion()" style="padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 3px;">Enviar evaluación</button>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${avisos == null or avisos.empty}">
+            <p>No hay avisos de adopción disponibles.</p>
+        </div>
+
+        <!-- Paginación (porque son varios avisos de adopción) -->
+        <div th:if="${total_paginas > 1}" class="paginacion">
+            <!-- Primera página -->
+            <a th:if="${pagina_actual > 1}" th:href="@{/listado(pagina=1)}">« Primera</a>
+            
+            <!-- Página anterior -->
+            <a th:if="${pagina_actual > 1}" th:href="@{/listado(pagina=${pagina_actual-1})}">‹ Anterior</a>
+            
+            <!-- Páginas numeradas -->
+            <span th:each="i : ${#numbers.sequence(1, total_paginas)}">
+                <a th:if="${(i >= pagina_actual - 2) and (i <= pagina_actual + 2)}"
+                   th:href="@{/listado(pagina=${i})}"
+                   th:class="${i == pagina_actual} ? 'activa' : ''"
+                   th:text="${i}">1</a>
+            </span>
+            
+            <!-- Página siguiente -->
+            <a th:if="${pagina_actual < total_paginas}" th:href="@{/listado(pagina=${pagina_actual+1})}">Siguiente ›</a>
+            
+            <!-- Última página -->
+            <a th:if="${pagina_actual < total_paginas}" th:href="@{/listado(pagina=${total_paginas})}">Última »</a>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="/">← Volver a la portada</a>
+        </div>
+    </div>
+
+    <script>
+        let avisoIdActual = null;
+        
+        function mostrarModalEvaluacion(avisoId) {
+            avisoIdActual = avisoId;
+            document.getElementById('modalEvaluacion').style.display = 'block';
+            document.getElementById('selectNota').value = '';
+        }
+        
+        function cerrarModalEvaluacion() {
+            document.getElementById('modalEvaluacion').style.display = 'none';
+            avisoIdActual = null;
+        }
+        
+        function enviarEvaluacion() {
+            const nota = parseInt(document.getElementById('selectNota').value);
+            
+            if (!nota) {
+                mostrarMensaje('Por favor seleccione una nota', 'error');
+                return;
+            }
+            
+            // Llamada asíncrona al backend
+            fetch('/api/evaluaciones/agregar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    avisoId: avisoIdActual,
+                    nota: nota
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    mostrarMensaje('Evaluación agregada correctamente', 'success');
+                    //Es para actualizar la nota en la interfaz
+                    actualizarNotaEnInterfaz(avisoIdActual, data.nuevoPromedio);
+                    cerrarModalEvaluacion();
+                } else {
+                    mostrarMensaje(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error al enviar evaluación', 'error');
+            });
+        }
+        
+        function actualizarNotaEnInterfaz(avisoId, nuevoPromedio) {
+            //Es para buscar la fila del aviso y actualizar la nota
+            const filas = document.querySelectorAll('tr');
+            filas.forEach(fila => {
+                const celdaId = fila.cells[0];
+                if (celdaId && celdaId.textContent == avisoId) {
+                    const celdaNota = fila.cells[5];
+                    if (celdaNota) {
+                        if (nuevoPromedio !== null) {
+                            celdaNota.innerHTML = `<span>${Math.round(nuevoPromedio)}</span>`;
+                        } else {
+                            celdaNota.innerHTML = '<span class="sin-nota">-</span>';
+                        }
+                    }
+                }
+            });
+        }
+        
+        function mostrarMensaje(mensaje, tipo) {
+            const mensajeDiv = document.getElementById('mensajeEvaluacion');
+            mensajeDiv.textContent = mensaje;
+            mensajeDiv.style.display = 'block';
+            mensajeDiv.style.backgroundColor = tipo === 'success' ? '#d4edda' : '#f8d7da';
+            mensajeDiv.style.color = tipo === 'success' ? '#155724' : '#721c24';
+            mensajeDiv.style.border = tipo === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+            
+            setTimeout(() => {
+                mensajeDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        //Es para cerrar el modal al hacer clic fuera
+        document.getElementById('modalEvaluacion').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalEvaluacion();
+            }
+        });
+    </script>
+</body>
+</html>
