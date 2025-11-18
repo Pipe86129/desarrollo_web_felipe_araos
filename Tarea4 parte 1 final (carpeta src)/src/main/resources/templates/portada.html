@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portada de las adopciones</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style> 
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+    }
+    .boton-menu {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 5px;
+    }
+    .boton-menu:hover {
+        background-color: #0056b3;
+    }
+    .mensaje-exito {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .imagen-aviso {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: block;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <!-- Mensaje de éxito -->
+        <div th:if="${param.exito != null}" class="mensaje-exito">
+            ¡Aviso de adopción agregado correctamente!
+        </div>
+
+        <h1>Bienvenido!</h1>
+        <p><strong>Hola!</strong> Gracias por usar nuestra página. Te damos la bienvenida.</p>
+    </div>
+
+    <div>
+        <h2>Menú</h2>
+        <div class="botones">
+            <a href="/agregar" class="boton-menu">Agregar aviso de adopción</a>
+        </div>
+        <div class="botones">
+            <a href="/listado" class="boton-menu">Listado de avisos de adopción</a>
+        </div>
+        <div class="botones">
+            <a href="/estadisticas" class="boton-menu">Estadísticas</a>
+        </div>
+    </div>
+
+    <div>
+        <h3>Últimos 5 avisos de adopción</h3>
+        <table style="width: 100%;">
+            <tr>
+                <th>Fecha de publicación</th>
+                <th>Comuna</th>
+                <th>Sector</th>
+                <th>Cantidad, Tipo y Edad</th>
+                <th>Foto</th>
+            </tr>
+            <tr th:each="aviso : ${ultimos_avisos}">
+                <td th:text="${#temporals.format(aviso.fechaIngreso, 'dd-MM-yyyy HH:mm')}">16-11-2025 13:20</td>
+                <td th:text="${aviso.comuna.nombre}">Santiago</td>
+                <td th:text="${aviso.sector} ?: 'No especificado'">Centro</td>
+                <td th:text="|${aviso.cantidad} ${aviso.tipo} ${aviso.edad} ${aviso.unidadMedida == T(cl.ucursos.tarea4.models.AvisoAdopcion.UnidadMedida).m ? 'meses' : 'años'}|">
+                    1 gato 2 meses
+                </td>
+                <td>
+                    <!--- Se usa Thymeleaf para generar URLs válidas -->
+                    <img th:if="${aviso.fotos != null and !aviso.fotos.empty}" 
+                         th:src="@{'/uploads/' + ${#uris.escapePathSegment(aviso.fotos[0].rutaArchivo)}}" 
+                         alt="Foto del aviso" 
+                         class="imagen-aviso"
+                         onerror="console.log('Error cargando:', this.src)">
+                    <span th:if="${aviso.fotos == null or aviso.fotos.empty}" style="color: #666;">
+                        Sin foto
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
