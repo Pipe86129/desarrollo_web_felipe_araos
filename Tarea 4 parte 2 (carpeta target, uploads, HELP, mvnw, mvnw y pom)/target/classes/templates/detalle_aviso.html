@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del aviso de adopción</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 10px;
+    }
+    .foto-miniatura {
+        width: 320px;
+        height: 240px;
+        cursor: pointer;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    #superposicion {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+    }
+    .seccion-comentarios {
+        margin-top: 40px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .formulario-comentario {
+        margin-bottom: 30px;
+        padding: 15px;
+        background: white;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .formulario-comentario label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    .formulario-comentario input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .formulario-comentario textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        resize: vertical;
+    }
+    .boton-comentario {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .boton-comentario:hover {
+        background-color: #0056b3;
+    }
+    .lista-comentarios {
+        margin-top: 20px;
+    }
+    .comentario {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #007bff;
+    }
+    .comentario-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .comentario-nombre {
+        font-weight: bold;
+        color: #333;
+    }
+    .comentario-fecha {
+        color: #666;
+        font-size: 0.9em;
+    }
+    .comentario-texto {
+        color: #444;
+        line-height: 1.4;
+    }
+    .mensaje-error {
+        color: red;
+        margin-top: 10px;
+        padding: 10px;
+        background: #ffe6e6;
+        border-radius: 3px;
+    }
+    .mensaje-exito {
+        color: green;
+        margin-top: 10px;
+        padding: 10px;
+        background: #e6ffe6;
+        border-radius: 3px;
+    }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Información Completa del Aviso de Adopción</h2>
+        
+        <div th:if="${aviso != null}">
+        <table style="width: 100%;">
+            <!-- Información de ubicación -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información para la ubicación</th>
+            </tr>
+            <tr>
+                <th>Región</th>
+                <td th:text="${aviso.comuna.region.nombre}">Región Metropolitana</td>
+            </tr>
+            <tr>
+                <th>Comuna</th>
+                <td th:text="${aviso.comuna.nombre}">Santiago</td>
+            </tr>
+            <tr>
+                <th>Sector</th>
+                <td th:text="${aviso.sector} ?: 'No especificado'">Centro</td>
+            </tr>
+            
+            <!-- Información del contacto -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información del contacto</th>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td th:text="${aviso.nombre}">Juan Pérez</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td th:text="${aviso.email}">juan@example.com</td>
+            </tr>
+            <tr>
+                <th>Teléfono</th>
+                <td th:text="${aviso.celular} ?: 'No proporcionado'">+56912345678</td>
+            </tr>
+            
+            <!-- Información de la mascota -->
+            <tr>
+                <th colspan="2" style="background-color: #f0f0f0;">Información de la mascota</th>
+            </tr>
+            <tr>
+                <th>Tipo de mascota</th>
+                <td th:text="${#strings.capitalize(aviso.tipo.toString())}">Perro</td>
+            </tr>
+            <tr>
+                <th>Cantidad</th>
+                <td th:text="${aviso.cantidad}">1</td>
+            </tr>
+            <tr>
+                <th>Edad</th>
+                <td th:text="|${aviso.edad} ${aviso.unidadMedida == T(cl.ucursos.tarea4.models.AvisoAdopcion.UnidadMedida).m ? 'meses' : 'años'}|">2 meses</td>
+            </tr>
+            <tr>
+                <th>Fecha disponible para entrega</th>
+                <td th:text="${#temporals.format(aviso.fechaEntrega, 'dd-MM-yyyy')}">20-11-2025</td>
+            </tr>
+            
+            <!-- Descripción -->
+            <tr th:if="${aviso.descripcion != null and aviso.descripcion != ''}">
+                <th>Descripción</th>
+                <td th:text="${aviso.descripcion}">Mascota muy cariñosa y juguetona</td>
+            </tr>
+            
+            <!-- Fotos -->
+            <tr>
+                <th>Fotos</th>
+                <td>
+                    <div th:if="${aviso.fotos != null and !aviso.fotos.empty}">
+                        <!-- Se busca usar escapePathSegment para URLs válidas (antes me daba error, por eso el cambio)-->
+                        <img th:each="foto : ${aviso.fotos}" 
+                             th:src="@{'/uploads/' + ${#uris.escapePathSegment(foto.rutaArchivo)}}" 
+                             alt="Foto del aviso" 
+                             class="foto-miniatura"
+                             th:attr="data-src=@{'/uploads/' + ${#uris.escapePathSegment(foto.rutaArchivo)}}"
+                             onerror="console.log('Error cargando:', this.src)">
+                    </div>
+                    <div th:if="${aviso.fotos == null or aviso.fotos.empty}">
+                        <span style="color: #666;">No hay fotos</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Sección de comentarios -->
+        <div class="seccion-comentarios">
+            <h3>Comentarios</h3>
+            
+            <!-- Formulario para agregar comentario -->
+            <div class="formulario-comentario">
+                <h4>Agregar Comentario</h4>
+                <form id="formularioComentario">
+                    <label for="nombreComentario">Nombre:</label>
+                    <input type="text" id="nombreComentario" name="nombre" 
+                           minlength="3" maxlength="80" required>
+                    
+                    <label for="textoComentario">Comentario:</label>
+                    <textarea id="textoComentario" name="texto" 
+                              rows="4" cols="50" 
+                              minlength="5" required></textarea>
+                    
+                    <button type="submit" class="boton-comentario">Agregar comentario</button>
+                </form>
+                <div id="mensajeComentario"></div>
+            </div>
+
+            <!-- Lista de comentarios -->
+            <div class="lista-comentarios" id="listaComentarios">
+                <div class="mensaje-carga">Cargando comentarios...</div>
+            </div>
+        </div>
+
+        <!-- Fotos ampliadas -->
+        <div id="superposicion">
+            <div style="position:relative; text-align:center; margin-top:50px;">
+                <!--  src no vacío, se busca usar imagen por defecto -->
+                <img id="fotoAmpliada" src="/img/placeholder.jpg" alt="Foto ampliada" style="max-width: 90%; max-height: 90%; border:5px solid white; object-fit: contain;">
+                <button onclick="cerrarFoto()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:10px; cursor:pointer;">X Cerrar</button>
+            </div>
+        </div>
+
+        </div>
+
+        <div th:if="${aviso == null}">
+            <p>No se encontró información del aviso.</p>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="/listado">← Volver al listado</a> | 
+            <a href="/">Volver a la portada</a>
+        </div>
+    </div>
+
+    <script>
+    // Script para las fotos ampliadas
+    function mostrarFoto(src) {
+        console.log("Mostrando foto:", src);
+        document.getElementById('fotoAmpliada').src = src;
+        document.getElementById('superposicion').style.display = 'block';
+    }
+    
+    function cerrarFoto() {
+        document.getElementById('superposicion').style.display = 'none';
+    }
+
+    // Configurar event listeners para las fotos
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar clics en las fotos
+        const fotos = document.querySelectorAll('.foto-miniatura');
+        fotos.forEach(foto => {
+            foto.addEventListener('click', function() {
+                const src = this.getAttribute('data-src');
+                console.log("Foto clickeada, src:", src);
+                mostrarFoto(src);
+            });
+        });
+        
+        // Cargar comentarios
+        const pathParts = window.location.pathname.split('/');
+        const avisoId = pathParts[pathParts.length - 1];
+        
+        if (avisoId && !isNaN(avisoId)) {
+            cargarComentarios(avisoId);
+            
+            // Configurar el formulario de comentarios
+            const formularioComentario = document.getElementById('formularioComentario');
+            if (formularioComentario) {
+                formularioComentario.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    agregarComentario(avisoId);
+                });
+            }
+        }
+    });
+
+    function cargarComentarios(avisoId) {
+        fetch(`/api/aviso/${avisoId}/comentarios`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    mostrarComentarios(data.data);
+                } else {
+                    document.getElementById('listaComentarios').innerHTML = 
+                        '<div class="mensaje-error">Error al cargar comentarios: ' + (data.message || 'Error desconocido') + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('listaComentarios').innerHTML = 
+                    '<div class="mensaje-error">Error al cargar comentarios: ' + error.message + '</div>';
+            });
+    }
+
+    function mostrarComentarios(comentarios) {
+        const listaComentarios = document.getElementById('listaComentarios');
+        
+        if (!comentarios || comentarios.length === 0) {
+            listaComentarios.innerHTML = '<p>No hay comentarios aún. Sé el primero en comentar.</p>';
+            return;
+        }
+
+        let html = '';
+        comentarios.forEach(comentario => {
+            const fecha = new Date(comentario.fecha).toLocaleDateString('es-CL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            html += `
+                <div class="comentario">
+                    <div class="comentario-header">
+                        <span class="comentario-nombre">${comentario.nombre}</span>
+                        <span class="comentario-fecha">${fecha}</span>
+                    </div>
+                    <div class="comentario-texto">${comentario.texto}</div>
+                </div>
+            `;
+        });
+
+        listaComentarios.innerHTML = html;
+    }
+
+    function agregarComentario(avisoId) {
+        const nombre = document.getElementById('nombreComentario').value.trim();
+        const texto = document.getElementById('textoComentario').value.trim();
+        const mensajeDiv = document.getElementById('mensajeComentario');
+
+        // Validaciones del cliente
+        if (nombre.length < 3 || nombre.length > 80) {
+            mensajeDiv.innerHTML = '<div class="mensaje-error">El nombre debe tener entre 3 y 80 caracteres</div>';
+            return;
+        }
+
+        if (texto.length < 5) {
+            mensajeDiv.innerHTML = '<div class="mensaje-error">El comentario debe tener al menos 5 caracteres</div>';
+            return;
+        }
+
+        // Enviar comentario
+        fetch(`/api/aviso/${avisoId}/comentarios`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nombre: nombre,
+                texto: texto
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                mensajeDiv.innerHTML = '<div class="mensaje-exito">Comentario agregado correctamente</div>';
+                document.getElementById('formularioComentario').reset();
+                cargarComentarios(avisoId); // Recargar la lista
+                
+                // Limpiar mensaje después de 3 segundos
+                setTimeout(() => {
+                    mensajeDiv.innerHTML = '';
+                }, 3000);
+            } else {
+                mensajeDiv.innerHTML = `<div class="mensaje-error">${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mensajeDiv.innerHTML = '<div class="mensaje-error">Error al agregar comentario</div>';
+        });
+    }
+    </script>
+</body>
+</html>
