@@ -6,3 +6,5 @@ mantener las funcionalidades de las tareas anteriores, por decirlo así, "traspa
 función AVG de SQL, también, usé el método de consulta derivada de Spring Data JPA en el archivo AvisoAdopcionRepository.java.
 
 Por último, dado que, en el auxiliar 10, se organizó en inglés (con nombres como AppController.java, ApiController.java, entre otros), usé este mismo formato en mi tarea, por la simpleza que tenía.
+
+Sólo lean los archivos que dicen "Tarea4 parte final" no los otros, que no sé como borrarlos, y por si acaso, envié los finales, sólo vean esos.
